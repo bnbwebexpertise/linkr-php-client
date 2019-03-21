@@ -26,12 +26,18 @@ class ShortUrl
      */
     public $longUrl;
 
+    /**
+     * @var
+     */
+    public $createdAt;
 
-    public function __construct(string $alias, string $shortUrl, string $longUrl)
+
+    public function __construct(string $alias, string $shortUrl, string $longUrl, int $createdAt = null)
     {
 
         $this->alias = $alias;
         $this->shortUrl = $shortUrl;
         $this->longUrl = $longUrl;
+        $this->createdAt = $createdAt ?? time();
     }
 }

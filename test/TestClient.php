@@ -4,12 +4,14 @@ use Bnb\Linkr\Client as LinkrClient;
 
 require_once '../vendor/autoload.php';
 
-$client = new LinkrClient('https://s.bnb.re', 'TestApiKey');
+$credentials = json_decode(file_get_contents(__DIR__ . '/credentials.json'), true);
+
+$client = new LinkrClient($credentials['url'], $credentials['key']);
 
 try {
     $link = $client->shorten('https://bnb.re/with-a-very-long-url-name');
-
-    var_dump($link);
+    $info = $client->info($link->alias);
+    $client->delete($link->alias);
 } catch (\Bnb\Linkr\ShortUrlException $e) {
     echo $e->getMessage();
 
