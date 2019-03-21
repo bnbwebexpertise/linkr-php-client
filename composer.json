@@ -1,0 +1,19 @@
+{
+  "name": "bnbwebexpertise/linkr-php-client",
+  "description": "Linkr PHP client lib",
+  "authors": [
+    {
+      "name": "Jérémy Gaulin",
+      "email": "jeremy@bnb.re"
+    }
+  ],
+  "require": {
+    "php": ">=7.1",
+    "ext-curl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bnb\\Linkr\\": "src/"
+    }
+  }
+}
