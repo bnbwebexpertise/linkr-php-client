@@ -32,12 +32,12 @@ class ShortUrl
     public $createdAt;
 
 
-    public function __construct(string $alias, string $shortUrl, string $longUrl, int $createdAt = null)
+    public function __construct($alias, $shortUrl, $longUrl, $createdAt = null)
     {
 
         $this->alias = $alias;
         $this->shortUrl = $shortUrl;
         $this->longUrl = $longUrl;
-        $this->createdAt = $createdAt ?? time();
+        $this->createdAt = empty($createdAt) ? time() : $createdAt;
     }
 }

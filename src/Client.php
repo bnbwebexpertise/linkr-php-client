@@ -24,7 +24,7 @@ class Client
      * @param string $url Endpoint URL of Linkr Server
      * @param string $key API Key
      */
-    public function __construct(string $url, string $key)
+    public function __construct($url, $key)
     {
 
         $this->url = rtrim($url, '/');
@@ -40,7 +40,7 @@ class Client
      * @return ShortUrl
      * @throws ShortUrlException
      */
-    public function shorten(string $url): ShortUrl
+    public function shorten($url)
     {
         $alias = '';
         $length = 3;
@@ -66,7 +66,7 @@ class Client
             if ($statusCode !== 200 || empty($result['success'])) {
 
                 if (empty($result['failure']) || ! in_array($result['failure'], ['failure_unavailable_alias', 'failure_reserved_alias'])) {
-                    throw new ShortUrlException('server request has failed: ' . $result['failure'] ?? 'unknown error');
+                    throw new ShortUrlException('server request has failed: ' . empty($result['failure']) ? 'unknown error' : $result['failure']);
                 }
             }
 
@@ -96,12 +96,12 @@ class Client
      * @return ShortUrl
      * @throws ShortUrlException
      */
-    public function info(string $alias): ShortUrl
+    public function info($alias)
     {
         list($result, $statusCode) = $this->query('POST', 'link/details', ['alias' => $alias]);
 
         if ($statusCode !== 200 || empty($result['success'])) {
-            throw new ShortUrlException('server request has failed: ' . $result['failure'] ?? 'unknown error');
+            throw new ShortUrlException('server request has failed: ' . empty($result['failure']) ? 'unknown error' : $result['failure']);
         }
 
         $result = $result['details'];
@@ -115,18 +115,18 @@ class Client
      *
      * @throws ShortUrlException
      */
-    public function delete(string $alias): void
+    public function delete($alias)
     {
         list($result, $statusCode) = $this->query('POST', 'link/details', ['alias' => $alias]);
 
         if ($statusCode !== 200 || empty($result['success'])) {
-            throw new ShortUrlException('server request has failed: ' . $result['failure'] ?? 'unknown error');
+            throw new ShortUrlException('server request has failed: ' . empty($result['failure']) ? 'unknown error' : $result['failure']);
         }
 
         list($result, $statusCode) = $this->query('DELETE', 'link/delete', ['link_id' => $result['details']['link_id']]);
 
         if ($statusCode !== 200 || empty($result['success'])) {
-            throw new ShortUrlException('server request has failed: ' . $result['failure'] ?? 'unknown error');
+            throw new ShortUrlException('server request has failed: ' . empty($result['failure']) ? 'unknown error' : $result['failure']);
         }
     }
 
@@ -138,7 +138,7 @@ class Client
      * @return array
      * @throws ShortUrlException
      */
-    protected function query(string $method, string $action, array $payload = null): array
+    protected function query($method, $action, $payload = null)
     {
         $headers = [];
         $url = sprintf('%s/linkr/api/%s', $this->url, $action);
