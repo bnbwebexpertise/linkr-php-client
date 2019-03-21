@@ -64,7 +64,6 @@ class Client
             list($result, $statusCode) = $this->query('PUT', 'link/add', $payload);
 
             if ($statusCode !== 200 || empty($result['success'])) {
-
                 if (empty($result['failure']) || ! in_array($result['failure'], ['failure_unavailable_alias', 'failure_reserved_alias'])) {
                     throw new ShortUrlException('server request has failed: ' . $result['failure'] ?? 'unknown error');
                 }
