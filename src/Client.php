@@ -17,18 +17,25 @@ class Client
      */
     private $key;
 
+    /**
+     * @var int
+     */
+    private $minLength;
+
 
     /**
      * Client constructor.
      *
-     * @param string $url Endpoint URL of Linkr Server
-     * @param string $key API Key
+     * @param string $url       Endpoint URL of Linkr Server
+     * @param string $key       API Key
+     * @param int    $minLength minimum size for aliases
      */
-    public function __construct($url, $key)
+    public function __construct($url, $key, $minLength = 6)
     {
 
         $this->url = rtrim($url, '/');
         $this->key = $key;
+        $this->minLength = $minLength;
     }
 
 
@@ -43,7 +50,7 @@ class Client
     public function shorten($url)
     {
         $alias = '';
-        $length = 3;
+        $length = $this->minLength;
         $tries = 3;
         $alphabetLength = strlen(self::ALPHABET);
 
@@ -74,7 +81,7 @@ class Client
                 break;
             }
 
-            if ($tries === 0) {
+            if ($tries-- === 0) {
                 ++$length;
                 $tries = 3;
             }
