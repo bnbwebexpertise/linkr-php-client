@@ -165,9 +165,10 @@ class Client
         }
 
         $ch = curl_init($url);
+        $proxy = self::$HTTP_PROXY ?? $_ENV['HTTP_PROXY'] ?? null;
 
-        if ( ! empty(self::$HTTP_PROXY)) {
-            curl_setopt($ch, CURLOPT_PROXY, self::$HTTP_PROXY);
+        if ($proxy) {
+            curl_setopt($ch, CURLOPT_PROXY, $proxy);
 
             if ( ! empty(self::$HTTP_PROXY_USERPWD)) {
                 curl_setopt($ch, CURLOPT_PROXYUSERPWD, self::$HTTP_PROXY_USERPWD);
