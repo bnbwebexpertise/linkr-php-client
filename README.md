@@ -18,3 +18,13 @@ $link = $client->info('myAlias');
 $client->delete($link->alias);
 
 ```
+
+If behind a proxy, configure once at runtim :
+
+```
+// Anonymous
+Linkr::setHttpProxy('http://10.10.10.10');
+
+// Authenticated
+Linkr::setHttpProxy('http://10.10.10.10', 'user', 'password');
+```
