@@ -7,6 +7,10 @@ class Client
 
     const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
+    private static $HTTP_PROXY;
+
+    private static $HTTP_PROXY_USERPWD;
+
     /**
      * @var string
      */
@@ -21,6 +25,13 @@ class Client
      * @var int
      */
     private $minLength;
+
+
+    public static function setHttpProxy(string $proxy, string $username = null, string $password = null)
+    {
+        self::$HTTP_PROXY = $proxy;
+        self::$HTTP_PROXY_USERPWD = $username ? implode(':', [urlencode($username), urlencode($password)]) : null;
+    }
 
 
     /**
@@ -68,7 +79,7 @@ class Client
                 throw new ShortUrlException('failed to build alias');
             }
 
-            list($result, $statusCode) = $this->query('PUT', 'link/add', $payload);
+            [$result, $statusCode] = $this->query('PUT', 'link/add', $payload);
 
             if ($statusCode !== 200 || empty($result['success'])) {
                 if (empty($result['failure']) || ! in_array($result['failure'], ['failure_unavailable_alias', 'failure_reserved_alias'])) {
@@ -104,7 +115,7 @@ class Client
      */
     public function info(string $alias): ShortUrl
     {
-        list($result, $statusCode) = $this->query('POST', 'link/details', ['alias' => $alias]);
+        [$result, $statusCode] = $this->query('POST', 'link/details', ['alias' => $alias]);
 
         if ($statusCode !== 200 || empty($result['success'])) {
             throw new ShortUrlException('server request has failed: ' . $result['failure'] ?? 'unknown error');
@@ -123,13 +134,13 @@ class Client
      */
     public function delete(string $alias): void
     {
-        list($result, $statusCode) = $this->query('POST', 'link/details', ['alias' => $alias]);
+        [$result, $statusCode] = $this->query('POST', 'link/details', ['alias' => $alias]);
 
         if ($statusCode !== 200 || empty($result['success'])) {
             throw new ShortUrlException('server request has failed: ' . $result['failure'] ?? 'unknown error');
         }
 
-        list($result, $statusCode) = $this->query('DELETE', 'link/delete', ['link_id' => $result['details']['link_id']]);
+        [$result, $statusCode] = $this->query('DELETE', 'link/delete', ['link_id' => $result['details']['link_id']]);
 
         if ($statusCode !== 200 || empty($result['success'])) {
             throw new ShortUrlException('server request has failed: ' . $result['failure'] ?? 'unknown error');
@@ -154,6 +165,14 @@ class Client
         }
 
         $ch = curl_init($url);
+
+        if ( ! empty(self::$HTTP_PROXY)) {
+            curl_setopt($ch, CURLOPT_PROXY, self::$HTTP_PROXY);
+
+            if ( ! empty(self::$HTTP_PROXY_USERPWD)) {
+                curl_setopt($ch, CURLOPT_PROXYUSERPWD, self::$HTTP_PROXY_USERPWD);
+            }
+        }
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
